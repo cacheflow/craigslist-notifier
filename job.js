@@ -1,7 +1,6 @@
-const kue = require('kue'); 
-const jobs = kue.createQueue(); 
-const noodle = require('noodlejs'); 
-import {scrapeCraigslist} from './utils/api.js'
+import {createQueue} from 'kue'
+const noodle = require('noodlejs');
+import scrapeCraigslist from './utils/api.js'
 
 
 const create = () => {
@@ -14,10 +13,9 @@ const create = () => {
   job.on('progress', ( progress ) => console.log( `current progress is %complete` ))
 
   job.save()
-  setTimeout(create, 4100)
+  setTimeout( create, 4100 )
 }
 
 create()
 
-jobs.process('craigslist', 1, ( job, done ) => scrapeCraigslist( job, done ))
-
+jobs.process('craigslist', 1, ( job, done ) => console.log( job, done ))
