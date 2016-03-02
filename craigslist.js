@@ -8,13 +8,15 @@ var craigslist = {
      date: 'time@datetime',
     link: 'a@href',
   },
+  craigslistRegex: /(https?:\/\/)(\w+)/,
+  site: "http://losangeles.craigslist.org/search/hhh",
   craigslistAds: [],
   query(finished) {
     console.log("calling query");
     var hourAgo = moment().subtract('60', 'minutes');
     var kueDone = finished;
     return new Promise ((resolve, reject) => {
-      osmosis.get('http://losangeles.craigslist.org/search/hhh').find('span.pl').set(this.queryParams).then((context, data, next, done) => {
+      osmosis.get(this.site).find('span.pl').set(this.queryParams).then((context, data, next, done) => {
         this.craigslistAds.push(data)
         resolve(this.craigslistAds)
       })
@@ -24,6 +26,7 @@ var craigslist = {
   },
 
   checkForNewAds() {
+    var site = this.site;
     var anHourAgo = moment().subtract('60', 'minutes');
     var newAds = [];
     this.craigslistAds.map((currentValue, index, array) => {
@@ -31,8 +34,9 @@ var craigslist = {
       newAds.push(currentValue.link);
      }
    });
-   var linkToSend = `http://losangeles.craigslist.org${newAds[1]}`
-   this.sendTextMessage(linkToSend)
+   var random = newAds[Math.floor(Math.random() & newAds.length)];
+   var craigslistAd = this.craigslistRegex.exec(this.site)
+   console.log("random", "http://" + craigslistAd[2] + ".craigslist.com" + random);
   },
 
 
@@ -44,7 +48,6 @@ var craigslist = {
     }, (err, responseData) => {
       console.log(responseData.body);
     });
-    return;
   }
 };
 

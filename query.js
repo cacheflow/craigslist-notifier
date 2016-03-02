@@ -20,5 +20,3 @@ scrapeQueue.process((job, done) => {
 var createJob = () => {
   scrapeQueue.add({site: 'https://losangeles.craigslist.org/search/hhh?sort=date&sale_date=2016-02-'});
 }
-
-createJob()
