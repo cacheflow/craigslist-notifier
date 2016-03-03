@@ -19,8 +19,7 @@ scrapeQueue.on('completed', function (job, result) {
 });
 
 scrapeQueue.process(function (job, done) {
-  var finished = done;
-  _craigslist2.default.query(finished);
+  _craigslist2.default.query(done);
 });
 
 var createJob = function createJob() {

@@ -13,10 +13,11 @@ scrapeQueue.on('completed', (job, result) => {
 });
 
 scrapeQueue.process((job, done) => {
-  var finished = done
-  craigslist.query(finished)
+  craigslist.query(done);
 });
 
 var createJob = () => {
   scrapeQueue.add({site: 'https://losangeles.craigslist.org/search/hhh?sort=date&sale_date=2016-02-'});
 }
+
+createJob()
