@@ -9,16 +9,17 @@ var craigslist = {
     link: 'a@href',
   },
   craigslistRegex: /(https?:\/\/)(\w+)/,
-  site: "https://losangeles.craigslist.org/search/hhh?sort=date&sale_date=2016-03-02",
+  site: "https://losangeles.craigslist.org/search/hhh",
   craigslistAds: [],
   query(finished) {
-    console.log("calling query");
-    var hourAgo = moment().subtract('60', 'minutes');
-    // var kueDone = finished;
+    if(this.site.includes('/hhh')) {
+      this.site = this.site.concat('?sort=date&sale_date=', moment().format('YYYY MM DD').replace(/\s+/g, '-'));
+    };
+    console.log("your url is", this.site);
     return new Promise ((resolve, reject) => {
       osmosis.get(this.site).find('span.pl').set(this.queryParams).then((context, data, next, done) => {
-        this.craigslistAds.push(data)
-        resolve(this.craigslistAds)
+        this.craigslistAds.push(data);
+        resolve(this.craigslistAds);
       })
     }).then(() => {
       this.checkForNewAds(finished);
@@ -26,30 +27,26 @@ var craigslist = {
   },
 
   checkForNewAds(finished) {
-    var anHourAgo = moment().subtract({'minutes': 100});
+    var anHourAgo = moment().subtract({'minutes': 60});
     var newAds = [];
     this.craigslistAds.map((currentValue, index, array) => {
      if(moment(currentValue.date, 'YYYY-MM-DD HH:mm').isAfter(anHourAgo)) {
       newAds.push(currentValue.link);
-      console.log("your length is ", newAds.length)
      }
      else {
-       console.log("nothing");
+       return;
      }
    });
    if(newAds.length > 0) {
      var randomAd = newAds[Math.floor(Math.random() & newAds.length)];
-     var craigslistAd = this.craigslistRegex.exec(this.site)
+     var craigslistAd = this.craigslistRegex.exec(this.site);
      var linkToSend = "http://" + craigslistAd[2] + ".craigslist.com" + randomAd;
-     finished()
+     console.log(linkToSend);
    }
    else {
-     finished()
+     finished();
+     return;
    }
-  },
-
-  finishThisCrap() {
-    console.log("calling finished");
   },
 
   sendTextMessage(linkToSend, finished) {
@@ -58,9 +55,11 @@ var craigslist = {
       from: "+18553381680",
       body: `lex this new listing is here ${linkToSend}`
     }, (err, responseData) => {
-      console.log(responseData.body);
-      finished()
+      if(!err) {
+        console.log(responseData);
+      }
     });
+    finished();
   }
 };
 
