@@ -2,9 +2,9 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var webpack = require('webpack');
 
 module.exports = {
-  entry: './query.js',
+  entry: './js/containers/App.js',
   output: {
-    filename: './bundle.js'
+    filename: './public/bundle.js'
   },
 
   module: {
