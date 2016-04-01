@@ -1,8 +1,40 @@
 // import craigslist from  './craigslist';
-
+var firebase = require('firebase');
+var firebaseRef = new Firebase('https://craigslist-notifier.firebaseio.com/listings')
 var kue = require('kue');
-var jobs = kue.createQueue();
-kue.app.listen(3001)
+var queue = kue.createQueue();
+
+firebaseRef.once("value", (snapshot) => {
+  snapshot.forEach((childSnapshot) => {
+    queue.create("scrape", {
+      name: childSnapshot.val().name,
+      section: childSnapshot.val().section,
+      number: childSnapshot.val().number
+    }).save()
+  })
+})
+
+queue.process("scrape", 100, (job, done) => {
+  console.log(job.data);
+});
+
+//poll the database and pull out the data then
+//create a job that scrapes and pass along the params
+//if there are new ads then create another job that
+//sends text messages
+
+  // setInterval( () => {
+  //   var links = [];
+  //   firebaseRef.once('value', (snapshot) => {
+      // snapshot.forEach((childSnapshot) => {
+      //   links.push(childSnapshot.val())
+      // })
+  //   }, (errorObject) => {
+  //     console.log("The read failed with error ", errorObject.code);
+  //   })
+  //   console.log(links)
+  // }, 5000)
+
 // jobs.create('scrape', {
 //   site: 'https://losangeles.craigslist.org/search/hhh?sort=date&sale_date=2016-02'
 // }).save();

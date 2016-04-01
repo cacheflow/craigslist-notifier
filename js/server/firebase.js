@@ -9,7 +9,7 @@ const firebaseRef = {
       name: name,
       number: number
     })
-  }
+  }, 
 }
 
 export default firebaseRef

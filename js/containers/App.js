@@ -20,10 +20,34 @@ class App extends React.Component {
   }
 
   addSectiontoState(sectionSelected) {
-    this.setState({section: sectionSelected});
+    this.formatSection(sectionSelected);
     this.updateClickState("showCategoryPage", false)
     this.updateClickState("showContactPage", true)
   }
+
+  formatSection(section) {
+    let formattedSection;
+    switch(section) {
+      case "Community":
+        formattedSection = "ccc"
+        break;
+      case "Housing":
+        formattedSection = "hhh"
+        break;
+      case "For Sale":
+        formattedSection = "sss"
+        break;
+      case "Services":
+        formattedSection = "bbb"
+        break;
+      case "Jobs":
+        formattedSection = "jjj"
+        break;
+    }
+    this.setState({section: formattedSection});
+    console.log(this.state.section)
+  }
+
   updateClickState(form, bool) {
     if(form === "showCategoryPage") {
       console.log("update stuff", form, bool)

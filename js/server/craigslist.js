@@ -13,7 +13,7 @@ var craigslist = {
   craigslistAds: [],
   query(finished) {
     return new Promise ((resolve, reject) => {
-      osmosis.get(this.queryParams()).find('span.pl').set(this.queryParams).then((context, data, next, done) => {
+      osmosis.get(this.site).find('span.pl').set(this.queryParams).then((context, data, next, done) => {
         this.craigslistAds.push(data);
         resolve(this.craigslistAds);
       })
