@@ -1,21 +1,54 @@
 const ReactDOM = require('react-dom');
 const $ = require('jquery');
+const path = require('path');
 import firebaseRef from '../server/firebase';
 import Category from '../components/Category';
 import ContactInfoForm from '../components/ContactInfoForm';
 import GSAP from 'react-gsap-enhancer'
+import Autosuggest from 'react-autosuggest';
+const cities = require("./../../public/data/cities")
+
+function getSuggestions(value) {
+  const inputValue = value.trim().toLowerCase();
+  const inputLength = inputValue.length;
+  if(inputLength === 0) {
+    console.log("returning array")
+    return []
+  }
+  else {
+    return cities.filter(city => city.toLowerCase().slice(0, inputLength) === inputValue)
+  }
+}
+
+function getSuggestionValue(suggestion) {
+  return suggestion
+}
+
+function renderSuggestion(suggestion) {
+  return (
+    <span> {suggestion}</span>
+  )
+}
+
+function onSuggestionSelected(event, {suggestion, suggestionValue, sectionIndex, method}) {
+  console.log("suggestion selected is ", suggestion)
+}
 
 
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      showCategoryPage: true,
+      showCategoryPage: false,
       section: "",
       number: "",
       name: "",
+      city: "",
+      abbrvCity: "",
       showContactPage: false,
-      showThankYouPage: false
+      showThankYouPage: false,
+      suggestions: getSuggestions(''),
+      showCitiesPage: true
     };
   }
 
@@ -23,6 +56,22 @@ class App extends React.Component {
     this.formatSection(sectionSelected);
     this.updateClickState("showCategoryPage", false)
     this.updateClickState("showContactPage", true)
+  }
+
+  onChange(event, {newValue}) {
+    this.setState({city: newValue})
+    console.log("changing city in on change", this.state.city)
+  }
+
+  onSuggestionsUpdateRequested({value}) {
+    this.setState({
+      suggestions: getSuggestions(value)
+    })
+  }
+
+  onSuggestionSelected(event, {suggestion, suggestionValue, sectionIndex, method}) {
+    this.setState({city: suggestion})
+    console.log("city is", this.state.city)
   }
 
   formatSection(section) {
@@ -67,9 +116,20 @@ class App extends React.Component {
     console.log("calling componentDidMount")
   }
 
+  transitionToCategoriesPage() {
+    return (
+      <button className="btn btn-success"> Help me</button>
+    )
+  }
+
   renderPage() {
     let categoryClicked = this.state.submittedCategoryForm;
     let submittedContactForm = this.state.submittedContactForm;
+    if(this.state.showCitiesPage) {
+      return (
+        this.showCitiesPage()
+      )
+    }
     if(this.state.showCategoryPage) {
       return (
         this.categoriesPage()
@@ -85,6 +145,36 @@ class App extends React.Component {
         this.thankYouPage()
       )
     }
+  }
+
+  showCitiesPage() {
+    const {city, suggestions} = this.state;
+    const inputProps = {
+      placeholder: "Enter a city you",
+      value: city,
+      onChange: this.onChange.bind(this)
+    }
+    return (
+      <div>
+          <div className="row">
+            <div id="craigslist-intro">Welcome to Craigslist Notifier </div>
+            <div id="craigslist-intro"> Enter a city you want to be notified in</div>
+            <div className="col-xs-6 col-xs-push-3">
+              <Autosuggest
+                suggestions={suggestions}
+                onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested.bind(this)}
+                onSuggestionSelected={this.onSuggestionSelected.bind(this)}
+                getSuggestionValue={getSuggestionValue}
+                onSuggestionSelected={onSuggestionSelected}
+                renderSuggestion={renderSuggestion}
+                inputProps={inputProps}/>
+            </div>
+            <div class="col-xs-6">
+              <button id="submit-form-button" className="btn btn-success"> Next page</button>
+            </div>
+          </div>
+        </div>
+    )
   }
 
   contactInfoForm() {
@@ -138,9 +228,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="container">
-        <div className="row">
           {this.renderPage()}
-        </div>
       </div>
     )
   }
