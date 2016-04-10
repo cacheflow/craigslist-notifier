@@ -1,15 +1,16 @@
 const Firebase = require('firebase');
 
 const firebaseRef = {
-  addToDatabase(section, name, number) {
+  addToDatabase(section, name, number, city) {
     const firebaseUrl = new Firebase('https://craigslist-notifier.firebaseio.com/listings')
     // const listings = firebaseUrl.child("listings")
     firebaseUrl.push({
       section: section,
       name: name,
-      number: number
+      number: number,
+      city: city
     })
-  }, 
+  },
 }
 
 export default firebaseRef

@@ -44,7 +44,7 @@ class App extends React.Component {
       number: "",
       name: "",
       city: "",
-      abbrvCity: "",
+      previewCity: "",
       showContactPage: false,
       showThankYouPage: false,
       suggestions: getSuggestions(''),
@@ -60,7 +60,7 @@ class App extends React.Component {
 
   onChange(event, {newValue}) {
     this.setState({city: newValue})
-    console.log("changing city in on change", this.state.city)
+    console.log(this.state.city)
   }
 
   onSuggestionsUpdateRequested({value}) {
@@ -122,6 +122,15 @@ class App extends React.Component {
     )
   }
 
+  disableCitiesPage() {
+    this.setState({showCitiesPage: false});
+    this.enableCategoriesPage()
+  }
+
+  enableCategoriesPage() {
+    this.setState({showCategoryPage: true});
+  }
+
   renderPage() {
     let categoryClicked = this.state.submittedCategoryForm;
     let submittedContactForm = this.state.submittedContactForm;
@@ -165,12 +174,13 @@ class App extends React.Component {
                 onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested.bind(this)}
                 onSuggestionSelected={this.onSuggestionSelected.bind(this)}
                 getSuggestionValue={getSuggestionValue}
-                onSuggestionSelected={onSuggestionSelected}
                 renderSuggestion={renderSuggestion}
                 inputProps={inputProps}/>
             </div>
-            <div class="col-xs-6">
-              <button id="submit-form-button" className="btn btn-success"> Next page</button>
+            <div className="col-xs-6">
+              <button id="submit-form-button"
+                onClick={this.disableCitiesPage.bind(this)}
+                className="btn btn-success"> Next page</button>
             </div>
           </div>
         </div>
@@ -194,7 +204,9 @@ class App extends React.Component {
 
   persistToDatabase(name, number) {
     let section = this.state.section;
-    firebaseRef.addToDatabase(section, name, number)
+    const {city} = this.state;
+    console.log("city is ", city)
+    firebaseRef.addToDatabase(section, name, number, city)
   }
   categoriesPage() {
     let categories = ['Housing', 'Jobs', 'Personals', 'Community', 'For Sale'];
