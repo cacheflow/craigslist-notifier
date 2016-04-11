@@ -11,31 +11,19 @@ var craigslist = {
   craigslistRegex: /(https?:\/\/)(\w+)/,
   site: "https://losangeles.craigslist.org/search/hhh",
   craigslistAds: [],
-  query(finished) {
+  query(jobData, finished) {
+    var currentDate = moment().format('YYYY-MM-DD')
+    var url = `https://${jobData.city}.craigslist.org/search/${jobData.section}?sort=date&sale_date=${currentDate}`
     return new Promise ((resolve, reject) => {
-      osmosis.get(this.site).find('span.pl').set(this.queryParams).then((context, data, next, done) => {
+      osmosis.get(url).find('span.pl').set(this.queryParams).then((context, data, next, done) => {
         this.craigslistAds.push(data);
         resolve(this.craigslistAds);
       })
     }).then(() => {
-      this.checkForNewAds(finished);
+      this.checkForNewAds(jobData, finished);
     });
   },
-  queryParams() {
-    var currentDate = moment().format('YYYY MM DD').replace(/\s+/g, '-');
-    var mostRecentAdQuery = currentDate.concat('?sort=date&sale_date=');
-    var sortQuery = '?sort=date&sale_date=';
-    var sortQueryWithDate = sortQuery.concat(currentDate);
-      if(!this.site.includes(sortQueryWithDate)) {
-        this.site = this.site.concat(sortQueryWithDate);
-        return this.site;
-      }
-      else {
-        return this.site;
-      }
-  },
-
-  checkForNewAds(finished) {
+  checkForNewAds(jobData, finished) {
     var anHourAgo = moment().subtract({'minutes': 60});
     var newAds = [];
     this.craigslistAds.map((currentValue, index, array) => {
@@ -49,8 +37,9 @@ var craigslist = {
    if(newAds.length > 0) {
      var randomAd = newAds[Math.floor(Math.random() & newAds.length)];
      var craigslistAd = this.craigslistRegex.exec(this.site);
-     var linkToSend = "http://" + craigslistAd[2] + ".craigslist.com" + randomAd;
-     this.sendTextMessage(linkToSend, finished);
+     var linkToSend = `http://${jobData.city}.craigslist.com${randomAd}`;
+     console.log(linkToSend, jobData)
+     this.sendTextMessage(linkToSend, jobData, finished)
    }
    else {
      console.log("nothing here");
@@ -59,14 +48,17 @@ var craigslist = {
    }
   },
 
-  sendTextMessage(linkToSend, finished) {
+  sendTextMessage(linkToSend, jobData, finished) {
     twilio.sendMessage({
-      to: "+16266443347",
+      to: `+1${jobData.number}`,
       from: "+18553381680",
-      body: `lex this new listing is here ${linkToSend}`
+      body: `${jobData.name} this new listing is here ${linkToSend}`
     }, (err, responseData) => {
       if(!err) {
         console.log(responseData);
+      }
+      else {
+        console.log(err)
       }
     });
     finished();

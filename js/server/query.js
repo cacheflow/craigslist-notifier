@@ -3,19 +3,23 @@ var firebase = require('firebase');
 var firebaseRef = new Firebase('https://craigslist-notifier.firebaseio.com/listings')
 var kue = require('kue');
 var queue = kue.createQueue();
+var craigslist = require('./craigslist');
 
 firebaseRef.once("value", (snapshot) => {
   snapshot.forEach((childSnapshot) => {
     queue.create("scrape", {
       name: childSnapshot.val().name,
+      number: childSnapshot.val().number,
       section: childSnapshot.val().section,
-      number: childSnapshot.val().number
+      city: childSnapshot.val().city,
     }).save()
   })
 })
 
+
 queue.process("scrape", 100, (job, done) => {
-  console.log(job.data);
+  var jobData = job.data;
+  craigslist.query(jobData, done);
 });
 
 //poll the database and pull out the data then

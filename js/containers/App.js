@@ -92,6 +92,9 @@ class App extends React.Component {
       case "Jobs":
         formattedSection = "jjj"
         break;
+      case "Personls":
+        formattedSection = "ppp"
+        break;
     }
     this.setState({section: formattedSection});
     console.log(this.state.section)
@@ -205,7 +208,6 @@ class App extends React.Component {
   persistToDatabase(name, number) {
     let section = this.state.section;
     const {city} = this.state;
-    console.log("city is ", city)
     firebaseRef.addToDatabase(section, name, number, city)
   }
   categoriesPage() {
