@@ -36,14 +36,17 @@ module.exports = {
     fs: 'empty',
     net: 'empty',
     tls: 'empty',
-    path: true
+    path: true,
+    dns: 'empty'
   },
 
   plugins: [
     new ExtractTextPlugin("styles.css"),
     new webpack.ProvidePlugin({
       'React': 'react',
-      '$': 'jQuery'
+      '$': 'jQuery',
+      'ReactDOM': 'react-dom',
+      'GSAP': 'react-gsap-enhancer'
     })
   ]
 };

@@ -2,6 +2,9 @@ var moment = require('moment');
 var osmosis = require('osmosis');
 var twilio = require('./twilio');
 var Promise = require('bluebird');
+var kue = require('kue');
+var queue = kue.createQueue();
+require('parsleyjs');
 
 var craigslist = {
   queryParams: {
@@ -35,11 +38,18 @@ var craigslist = {
      }
    });
    if(newAds.length > 0) {
-     var randomAd = newAds[Math.floor(Math.random() & newAds.length)];
-     var craigslistAd = this.craigslistRegex.exec(this.site);
+     this.craigslistAds.length = 0;
+     console.log("craigslist ads length is ", this.craigslistAds.length);
+     var randomAd = newAds[Math.floor(Math.random() * newAds.length)];
      var linkToSend = `http://${jobData.city}.craigslist.com${randomAd}`;
-     console.log(linkToSend, jobData)
-     this.sendTextMessage(linkToSend, jobData, finished)
+     newAds.length = 0;
+     finished()
+     queue.create("send text", {
+       name: jobData.name,
+       number: jobData.number,
+       link: linkToSend
+     }).save()
+     this.sendTextMessage()
    }
    else {
      console.log("nothing here");
@@ -48,20 +58,23 @@ var craigslist = {
    }
   },
 
-  sendTextMessage(linkToSend, jobData, finished) {
-    twilio.sendMessage({
-      to: `+1${jobData.number}`,
-      from: "+18553381680",
-      body: `${jobData.name} this new listing is here ${linkToSend}`
-    }, (err, responseData) => {
-      if(!err) {
-        console.log(responseData);
-      }
-      else {
-        console.log(err)
-      }
-    });
-    finished();
+  sendTextMessage() {
+    queue.process("send text", 100, (job, done) => {
+      twilio.sendMessage({
+        to: `+1${job.data.number}`,
+        from: "+18553381680",
+        body: `${job.data.name} this new listing is here ${job.data.link}`
+      }, (err, responseData) => {
+        if(!err) {
+          console.log("woo no errors");
+          done()
+        }
+        else {
+          console.log(err)
+          done()
+        }
+      });
+    })
   }
 };
 

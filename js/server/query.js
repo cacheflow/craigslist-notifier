@@ -5,22 +5,37 @@ var kue = require('kue');
 var queue = kue.createQueue();
 var craigslist = require('./craigslist');
 
-firebaseRef.once("value", (snapshot) => {
-  snapshot.forEach((childSnapshot) => {
-    queue.create("scrape", {
-      name: childSnapshot.val().name,
-      number: childSnapshot.val().number,
-      section: childSnapshot.val().section,
-      city: childSnapshot.val().city,
-    }).save()
-  })
-})
+setInterval(() => {
+  var job;
+  firebaseRef.once('value', (snapshot) => {
+    if(snapshot.exists()) {
+      snapshot.forEach((childSnapshot) => {
+        var job = queue.create("scrape", {
+          name: childSnapshot.val().name,
+          number: childSnapshot.val().number,
+          section: childSnapshot.val().section,
+          city: childSnapshot.val().city,
+        }).save()
+        queue.on('job complete', (result) => {
+          console.log(`Done with job ${result}`)
+        });
+      })
+    }
+    else {
+      console.log("snapshot doesn't exist")
+      return false;
+    }
+  });
+}, 3000);
 
 
-queue.process("scrape", 100, (job, done) => {
-  var jobData = job.data;
-  craigslist.query(jobData, done);
-});
+
+setInterval(() => {
+  queue.process("scrape", 3, (job, done) => {
+    var jobData = job.data
+    craigslist.query(jobData, done)
+  });
+}, 5000)
 
 //poll the database and pull out the data then
 //create a job that scrapes and pass along the params

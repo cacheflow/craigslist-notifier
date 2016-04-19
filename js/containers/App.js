@@ -1,10 +1,7 @@
-const ReactDOM = require('react-dom');
-const $ = require('jquery');
 const path = require('path');
 import firebaseRef from '../server/firebase';
 import Category from '../components/Category';
 import ContactInfoForm from '../components/ContactInfoForm';
-import GSAP from 'react-gsap-enhancer'
 import Autosuggest from 'react-autosuggest';
 const cities = require("./../../public/data/cities")
 
@@ -12,7 +9,6 @@ function getSuggestions(value) {
   const inputValue = value.trim().toLowerCase();
   const inputLength = inputValue.length;
   if(inputLength === 0) {
-    console.log("returning array")
     return []
   }
   else {
@@ -31,7 +27,7 @@ function renderSuggestion(suggestion) {
 }
 
 function onSuggestionSelected(event, {suggestion, suggestionValue, sectionIndex, method}) {
-  console.log("suggestion selected is ", suggestion)
+  // console.log("suggestion selected is ", suggestion)
 }
 
 
@@ -52,6 +48,13 @@ class App extends React.Component {
     };
   }
 
+  getValidatorData() {
+    return {
+      name: this.refs.nameField.value,
+      number: this.refs.numberField.value
+    }
+  }
+
   addSectiontoState(sectionSelected) {
     this.formatSection(sectionSelected);
     this.updateClickState("showCategoryPage", false)
@@ -60,7 +63,7 @@ class App extends React.Component {
 
   onChange(event, {newValue}) {
     this.setState({city: newValue})
-    console.log(this.state.city)
+    // console.log(this.state.city)
   }
 
   onSuggestionsUpdateRequested({value}) {
@@ -71,7 +74,7 @@ class App extends React.Component {
 
   onSuggestionSelected(event, {suggestion, suggestionValue, sectionIndex, method}) {
     this.setState({city: suggestion})
-    console.log("city is", this.state.city)
+    // console.log("city is", this.state.city)
   }
 
   formatSection(section) {
@@ -97,26 +100,21 @@ class App extends React.Component {
         break;
     }
     this.setState({section: formattedSection});
-    console.log(this.state.section)
+    // console.log(this.state.section)
   }
 
   updateClickState(form, bool) {
     if(form === "showCategoryPage") {
-      console.log("update stuff", form, bool)
+      // console.log("update stuff", form, bool)
       this.setState({showCategoryPage: bool})
     }
     else if(form === "showContactPage") {
-      console.log("contact form is", bool)
       this.setState({showContactPage: bool})
 
     }
     else if(form === "showThankYouPage", bool) {
       this.setState({showThankYouPage: bool})
     }
-  }
-
-  componentDidMount() {
-    console.log("calling componentDidMount")
   }
 
   transitionToCategoriesPage() {
@@ -199,10 +197,13 @@ class App extends React.Component {
     )
   }
 
-  submitContactInfo(name, number) {
-    this.updateClickState("showContactPage", false)
-    this.updateClickState("showThankYouPage", true)
-    this.persistToDatabase(name, number)
+  submitContactInfo(event) {
+    console.log(`event is ${event}`)
+    event.preventDefault(event)
+
+    // this.updateClickState("showContactPage", false)
+    // this.updateClickState("showThankYouPage", true)
+    // this.persistToDatabase(name, number)
   }
 
   persistToDatabase(name, number) {
@@ -240,6 +241,7 @@ class App extends React.Component {
   }
 
   render() {
+    console.log(this.propTypes)
     return (
       <div className="container">
           {this.renderPage()}
@@ -248,5 +250,5 @@ class App extends React.Component {
   }
 }
 
-export default GSAP()(App)
+export default validation(strategy)(App)
 ReactDOM.render(<App />, document.getElementById('craigslist-container'));
