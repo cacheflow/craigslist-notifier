@@ -40,5 +40,7 @@
   #craigslist-container .react-autosuggest__container .react-autosuggest__suggestion--focused {
     background-color: #2e8ece;
     color: white; }
+#craigslist-container #contact-form-submit {
+  display: block; }
 
 /*# sourceMappingURL=main.css.map */

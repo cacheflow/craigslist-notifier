@@ -48,12 +48,7 @@ class App extends React.Component {
     };
   }
 
-  getValidatorData() {
-    return {
-      name: this.refs.nameField.value,
-      number: this.refs.numberField.value
-    }
-  }
+
 
   addSectiontoState(sectionSelected) {
     this.formatSection(sectionSelected);
@@ -197,7 +192,7 @@ class App extends React.Component {
     )
   }
 
-  submitContactInfo(event) {
+  submitContactInfo() {
     console.log(`event is ${event}`)
     event.preventDefault(event)
 
@@ -241,7 +236,6 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.propTypes)
     return (
       <div className="container">
           {this.renderPage()}
@@ -250,5 +244,4 @@ class App extends React.Component {
   }
 }
 
-export default validation(strategy)(App)
 ReactDOM.render(<App />, document.getElementById('craigslist-container'));
