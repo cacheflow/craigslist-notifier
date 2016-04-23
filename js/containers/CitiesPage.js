@@ -4,6 +4,10 @@ import Category from '../components/Category';
 import ContactInfoForm from '../components/ContactInfoForm';
 import Autosuggest from 'react-autosuggest';
 const cities = require("./../../public/data/cities")
+import validation from 'react-validation-mixin';
+import strategy from 'joi-validation-strategy';
+import Joi from 'joi';
+import {PropTypes} from 'react';
 
 function getSuggestions(value) {
   const inputValue = value.trim().toLowerCase();
@@ -31,7 +35,7 @@ function onSuggestionSelected(event, {suggestion, suggestionValue, sectionIndex,
 }
 
 
-class App extends React.Component {
+class CitiesPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -46,6 +50,9 @@ class App extends React.Component {
       suggestions: getSuggestions(''),
       showCitiesPage: true
     };
+    this.validatorTypes = {
+      city: Joi.string().regex(/^[a-zA-Z]{4,30}$/).required().label('city')
+    }
   }
 
 
@@ -59,6 +66,13 @@ class App extends React.Component {
   onChange(event, {newValue}) {
     this.setState({city: newValue})
     // console.log(this.state.city)
+  }
+
+
+  getValidatorData() {
+    return {
+      city: this.state.city
+    }
   }
 
   onSuggestionsUpdateRequested({value}) {
@@ -118,9 +132,29 @@ class App extends React.Component {
     )
   }
 
-  disableCitiesPage() {
-    this.setState({showCitiesPage: false});
-    this.enableCategoriesPage()
+  disableCitiesPage(event) {
+    event.preventDefault()
+    const onValidate = (error) => {error ? console.log("we got errors", error) : console.log("NO ERRORS")}
+    this.props.validate(onValidate)
+    // let name = this.refs.nameField.value;
+    // let number = this.refs.numberField.value;
+    // this.props.validate((error) => {
+    //   if(error) {
+    //     console.log(`your error is ${error}`)
+    //   }
+    //   else {
+    //     console.log(`no errors`)
+    //   }
+    // this.setState({showCitiesPage: false});
+    // this.enableCategoriesPage()
+  }
+
+
+  renderError(message) {
+    console.log(message)
+    return (
+      <span className="alert-danger"> {message} </span>
+    )
   }
 
   enableCategoriesPage() {
@@ -164,20 +198,23 @@ class App extends React.Component {
           <div className="row">
             <div id="craigslist-intro">Welcome to Craigslist Notifier </div>
             <div id="craigslist-intro"> Enter a city you want to be notified in</div>
-            <div className="col-xs-6 col-xs-push-3">
-              <Autosuggest
-                suggestions={suggestions}
-                onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested.bind(this)}
-                onSuggestionSelected={this.onSuggestionSelected.bind(this)}
-                getSuggestionValue={getSuggestionValue}
-                renderSuggestion={renderSuggestion}
-                inputProps={inputProps}/>
-            </div>
-            <div className="col-xs-6">
-              <button id="submit-form-button"
-                onClick={this.disableCitiesPage.bind(this)}
-                className="btn btn-success"> Next page</button>
-            </div>
+            <form>
+              <div className="col-xs-6 col-xs-push-3">
+                <Autosuggest
+                  suggestions={suggestions}
+                  onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested.bind(this)}
+                  onSuggestionSelected={this.onSuggestionSelected.bind(this)}
+                  getSuggestionValue={getSuggestionValue}
+                  renderSuggestion={renderSuggestion}
+                  inputProps={inputProps}/>
+                  {this.renderError.call(null, this.props.getValidationMessages('city'))}
+              </div>
+              <div className="col-xs-6">
+                <button id="submit-form-button"
+                  onClick={this.disableCitiesPage.bind(this)}
+                  className="btn btn-success"> Next page</button>
+              </div>
+            </form>
           </div>
         </div>
     )
@@ -244,4 +281,13 @@ class App extends React.Component {
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('craigslist-container'));
+CitiesPage.propTypes = {
+  errors: PropTypes.object,
+  validate: PropTypes.func,
+  isValid: PropTypes.func,
+  handleValidation: PropTypes.func,
+  getValidationMessages: PropTypes.func,
+  clearValidations: PropTypes.func
+}
+
+export default validation(strategy)(CitiesPage)

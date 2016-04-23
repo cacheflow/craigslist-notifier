@@ -1,4 +1,3 @@
-// var parsley = require('parsleyjs');
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
 import Joi from 'joi';
@@ -54,7 +53,7 @@ class ContactInfoForm extends React.Component {
           className="form-control"
           onBlur = {this.props.handleValidation('number')}
           placeholder="number"/>
-          {this.renderMessage.call(null, this.props.getValidationMessages('number'))}
+          {this.renderError.call(null, this.props.getValidationMessages('number'))}
           <input
            ref="nameField"
            style={inputFieldStyles}
@@ -62,7 +61,7 @@ class ContactInfoForm extends React.Component {
            className="form-control"
            onBlur = {this.props.handleValidation('name')}
            placeholder="name"/>
-           {this.renderMessage.call(null, this.props.getValidationMessages('name'))}
+           {this.renderError.call(null, this.props.getValidationMessages('name'))}
           <button id="contact-form-submit" onClick={this.passRefsToParent.bind(this)} className="btn btn-success"> Submit </button>
         </form>
       </div>
@@ -79,4 +78,4 @@ ContactInfoForm.propTypes = {
   clearValidations: PropTypes.func
 }
 
-module.exports = validation(strategy)(ContactInfoForm)
+export default validation(strategy)(ContactInfoForm)
