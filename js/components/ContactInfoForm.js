@@ -27,7 +27,7 @@ class ContactInfoForm extends React.Component {
     }
   }
 
-  renderMessage(message) {
+  renderError(message) {
     console.log(message)
     return (
       <span className="alert-danger"> {message} </span>
@@ -53,7 +53,8 @@ class ContactInfoForm extends React.Component {
           className="form-control"
           onBlur = {this.props.handleValidation('number')}
           placeholder="number"/>
-          {this.renderError.call(null, this.props.getValidationMessages('number'))}
+          {this.renderError.bind(this, this.props.getValidationMessages('number'))}
+
           <input
            ref="nameField"
            style={inputFieldStyles}
@@ -61,7 +62,6 @@ class ContactInfoForm extends React.Component {
            className="form-control"
            onBlur = {this.props.handleValidation('name')}
            placeholder="name"/>
-           {this.renderError.call(null, this.props.getValidationMessages('name'))}
           <button id="contact-form-submit" onClick={this.passRefsToParent.bind(this)} className="btn btn-success"> Submit </button>
         </form>
       </div>

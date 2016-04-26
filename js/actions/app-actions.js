@@ -1,19 +1,26 @@
-import AppConstants from '../constants/app-constants';
-import _AppDispatcher from '../dispatchers/app-dispatcher';
-import {createJob} from '../server/api';
+export const DISABLE_CITIES_PAGE = 'DISABLE_CITIES_PAGE'
+export const SELECT_CATEGORY = 'SELECT_CATEGORY'
+export const SUBMIT_CONTACT_INF0 = 'SUBMIT_CONTACT_INF0'
 
-const AppActions = {
 
-  callServer(sentiment) {
-   createJob();
-  },
-
-  updateClickedStatus() {
-    _AppDispatcher.handleAction({
-      type: AppConstants.UPDATE_CLICKED_STATUS,
-      data: true
-    });
+export const disbaleCitiesPage(bool) {
+  return {
+    type: DISABLE_CITIES_PAGE,
+    bool
   }
 }
 
-export {AppActions}
+export const selectCategory(category) {
+  return {
+    type: SELECT_CATEGORY,
+    category
+  }
+}
+
+export const submitContactInfo(name, number) {
+  return {
+    type: SUBMIT_CONTACT_INF0,
+    name,
+    number  
+  }
+}

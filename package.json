@@ -26,7 +26,7 @@
     "react-redux": "^4.4.0",
     "react-router": "^2.0.0",
     "react-validation-mixin": "^5.3.4",
-    "redux": "^3.3.1",
+    "redux": "^3.5.2",
     "redux-thunk": "^1.0.3"
   },
   "devDependencies": {

@@ -9,7 +9,7 @@ import strategy from 'joi-validation-strategy';
 import Joi from 'joi';
 import {PropTypes} from 'react';
 
-function getSuggestions(value) {
+const getSuggestions = (value) => {
   const inputValue = value.trim().toLowerCase();
   const inputLength = inputValue.length;
   if(inputLength === 0) {
@@ -20,19 +20,17 @@ function getSuggestions(value) {
   }
 }
 
-function getSuggestionValue(suggestion) {
+const getSuggestionValue = (suggestion) => {
   return suggestion
 }
 
-function renderSuggestion(suggestion) {
+const renderSuggestion = (suggestion) => {
   return (
     <span> {suggestion}</span>
   )
 }
 
-function onSuggestionSelected(event, {suggestion, suggestionValue, sectionIndex, method}) {
-  // console.log("suggestion selected is ", suggestion)
-}
+
 
 
 class CitiesPage extends React.Component {
@@ -55,9 +53,8 @@ class CitiesPage extends React.Component {
     }
   }
 
-
-
   addSectiontoState(sectionSelected) {
+    console.log(`section is ${sectionSelected}`)
     this.formatSection(sectionSelected);
     this.updateClickState("showCategoryPage", false)
     this.updateClickState("showContactPage", true)
@@ -71,7 +68,7 @@ class CitiesPage extends React.Component {
 
   getValidatorData() {
     return {
-      city: this.state.city
+      city: $('.react-autosuggest__input').val()
     }
   }
 
@@ -134,7 +131,15 @@ class CitiesPage extends React.Component {
 
   disableCitiesPage(event) {
     event.preventDefault()
-    const onValidate = (error) => {error ? console.log("we got errors", error) : console.log("NO ERRORS")}
+    const onValidate = (error) => {
+      if(error) {
+        return false;
+      }
+      else {
+        this.setState({showCitiesPage: false})
+        this.enableCategoriesPage()
+      }
+    }
     this.props.validate(onValidate)
     // let name = this.refs.nameField.value;
     // let number = this.refs.numberField.value;
@@ -207,7 +212,7 @@ class CitiesPage extends React.Component {
                   getSuggestionValue={getSuggestionValue}
                   renderSuggestion={renderSuggestion}
                   inputProps={inputProps}/>
-                  {this.renderError.call(null, this.props.getValidationMessages('city'))}
+                  {this.renderError.apply(this, this.props.getValidationMessages('city'))}
               </div>
               <div className="col-xs-6">
                 <button id="submit-form-button"

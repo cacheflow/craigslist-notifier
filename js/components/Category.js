@@ -1,6 +1,9 @@
-
 export default class Category extends React.Component {
+  doStuff() {
+    console.log("woo")
+  }
   render() {
+    console.log(`props are ${this.props}`)
     var buttonStyle = {
       paddingBottom: "10px"
     }
