@@ -31,26 +31,21 @@ const renderSuggestion = (suggestion) => {
 }
 
 
-
-
 class CitiesPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      showCategoryPage: false,
-      section: "",
-      number: "",
-      name: "",
       city: "",
       previewCity: "",
-      showContactPage: false,
-      showThankYouPage: false,
-      suggestions: getSuggestions(''),
-      showCitiesPage: true
+      suggestions: getSuggestions('')
     };
     this.validatorTypes = {
       city: Joi.string().regex(/^[a-zA-Z]{4,30}$/).required().label('city')
     }
+  }
+
+  componentDidMount() {
+    console.log("your props are ", this.props)
   }
 
   addSectiontoState(sectionSelected) {
@@ -136,22 +131,10 @@ class CitiesPage extends React.Component {
         return false;
       }
       else {
-        this.setState({showCitiesPage: false})
-        this.enableCategoriesPage()
+        this.props.disableCitiesPage(this.state.city)
       }
     }
     this.props.validate(onValidate)
-    // let name = this.refs.nameField.value;
-    // let number = this.refs.numberField.value;
-    // this.props.validate((error) => {
-    //   if(error) {
-    //     console.log(`your error is ${error}`)
-    //   }
-    //   else {
-    //     console.log(`no errors`)
-    //   }
-    // this.setState({showCitiesPage: false});
-    // this.enableCategoriesPage()
   }
 
 
@@ -169,26 +152,32 @@ class CitiesPage extends React.Component {
   renderPage() {
     let categoryClicked = this.state.submittedCategoryForm;
     let submittedContactForm = this.state.submittedContactForm;
-    if(this.state.showCitiesPage) {
+    if(this.props.showCitiesPage) {
       return (
         this.showCitiesPage()
       )
     }
-    if(this.state.showCategoryPage) {
+    if(this.props.showCategoryPage) {
       return (
         this.categoriesPage()
       )
     }
-    if(this.state.showContactPage) {
+    if(this.props.showContactPage) {
       return (
         this.contactInfoForm()
       )
     }
-    if(this.state.showThankYouPage) {
+    if(this.props.showThankYouPage) {
       return (
         this.thankYouPage()
       )
     }
+  }
+
+  changePage(event) {
+    console.log("event is ", event)
+    event.preventDefault()
+    this.props.disableCitiesPage()
   }
 
   showCitiesPage() {
@@ -198,6 +187,7 @@ class CitiesPage extends React.Component {
       value: city,
       onChange: this.onChange.bind(this)
     }
+    const {disableCitiesPage} = this.props;
     return (
       <div>
           <div className="row">
@@ -216,7 +206,7 @@ class CitiesPage extends React.Component {
               </div>
               <div className="col-xs-6">
                 <button id="submit-form-button"
-                  onClick={this.disableCitiesPage.bind(this)}
+                  onClick={(e) => this.disableCitiesPage(e)}
                   className="btn btn-success"> Next page</button>
               </div>
             </form>
@@ -255,7 +245,7 @@ class CitiesPage extends React.Component {
         <div>
             <Category key = {index}
               category = {category}
-              addSectiontoState = {this.addSectiontoState.bind(this)}
+              selectCategory = {this.props.selectCategory}
             >
             </Category>
         </div>

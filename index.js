@@ -1,10 +1,13 @@
-import {render} from 'react-dom';
-import App from './js/containers/App';
-import {Router, Route, browserHistory} from 'react-router';
+import React from 'react'
+import {render} from 'react-dom'
+import {Provider} from 'react-redux'
+import App from './js/containers/App'
+import configureStore from './js/store/configureStore'
 
-render((
-  <Router history = {browserHistory}>
-    <Route path="/" component={App}>
-    </Route>
-  </Router>
-), document.getElementById('container'));
+const store = configureStore()
+
+render (
+  <Provider store={store}>
+    <App> </App>
+  </Provider>, document.getElementById('craigslist-container')
+)

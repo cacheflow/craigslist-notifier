@@ -4,7 +4,6 @@ var twilio = require('./twilio');
 var Promise = require('bluebird');
 var kue = require('kue');
 var queue = kue.createQueue();
-require('parsleyjs');
 
 var craigslist = {
   queryParams: {

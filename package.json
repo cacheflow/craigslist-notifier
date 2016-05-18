@@ -17,6 +17,7 @@
     "kue": "^0.10.5",
     "moment": "^2.11.2",
     "noodlejs": "^0.3.2",
+    "normalizr": "^2.1.0",
     "parsleyjs": "^2.3.9",
     "react": "^0.14.7",
     "react-autosuggest": "^3.7.0",
