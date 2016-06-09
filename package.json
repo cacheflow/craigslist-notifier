@@ -28,6 +28,7 @@
     "react-router": "^2.0.0",
     "react-validation-mixin": "^5.3.4",
     "redux": "^3.5.2",
+    "redux-form": "^5.2.3",
     "redux-thunk": "^1.0.3"
   },
   "devDependencies": {

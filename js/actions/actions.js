@@ -27,7 +27,6 @@ export function submitContactInfo() {
 export function updateField(field, val) {
   return {
     type: UPDATE_FIELD,
-    field,
     val    
   }
 }

@@ -8,6 +8,19 @@ import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
 import Joi from 'joi';
 import {PropTypes} from 'react';
+import {reduxForm} from 'redux-form';
+export const fields = ['city']
+
+const validate = values => {
+  const errors = {}
+  if(!values.city) {
+    errors.city = 'Required'
+  }
+  else if(values.city.length < 3) {
+    errors.city = "Must be more than 3 characters"
+  }
+  return errors
+}
 
 const getSuggestions = (value) => {
   const inputValue = value.trim().toLowerCase();
@@ -35,7 +48,7 @@ class CitiesPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      city: "",
+      page: 1,
       previewCity: "",
       suggestions: getSuggestions('')
     };
@@ -74,7 +87,7 @@ class CitiesPage extends React.Component {
   }
 
   onSuggestionSelected(event, {suggestion, suggestionValue, sectionIndex, method}) {
-    this.setState({city: suggestion})
+    this.props.updateField(suggestion)
     // console.log("city is", this.state.city)
   }
 
@@ -131,7 +144,7 @@ class CitiesPage extends React.Component {
         return false;
       }
       else {
-        this.props.disableCitiesPage(this.state.city)
+        this.setState({page: 2})
       }
     }
     this.props.validate(onValidate)
@@ -152,25 +165,15 @@ class CitiesPage extends React.Component {
   renderPage() {
     let categoryClicked = this.state.submittedCategoryForm;
     let submittedContactForm = this.state.submittedContactForm;
-    if(this.props.showCitiesPage) {
-      return (
-        this.showCitiesPage()
-      )
-    }
-    if(this.props.showCategoryPage) {
-      return (
-        this.categoriesPage()
-      )
-    }
-    if(this.props.showContactPage) {
-      return (
-        this.contactInfoForm()
-      )
-    }
-    if(this.props.showThankYouPage) {
-      return (
-        this.thankYouPage()
-      )
+    switch(this.state.page) {
+      case 1:
+        return this.showCitiesPage()
+      case 2:
+        return this.categoriesPage()
+      case 3:
+        return this.contactInfoForm()
+      case 4:
+        return this.thankYouPage()
     }
   }
 
@@ -181,13 +184,11 @@ class CitiesPage extends React.Component {
   }
 
   showCitiesPage() {
-    const {city, suggestions} = this.state;
-    const inputProps = {
-      placeholder: "Enter a city you",
-      value: city,
-      onChange: this.onChange.bind(this)
-    }
     const {disableCitiesPage} = this.props;
+    const {
+      fields: {city },
+      handleSubmit
+    } = this.props;
     return (
       <div>
           <div className="row">
@@ -195,18 +196,12 @@ class CitiesPage extends React.Component {
             <div id="craigslist-intro"> Enter a city you want to be notified in</div>
             <form>
               <div className="col-xs-6 col-xs-push-3">
-                <Autosuggest
-                  suggestions={suggestions}
-                  onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested.bind(this)}
-                  onSuggestionSelected={this.onSuggestionSelected.bind(this)}
-                  getSuggestionValue={getSuggestionValue}
-                  renderSuggestion={renderSuggestion}
-                  inputProps={inputProps}/>
-                  {this.renderError.apply(this, this.props.getValidationMessages('city'))}
+                <input type="text" placeholder="City" {...city} />
+                {city.touched && city.error && <div>{city.error}</div>}
               </div>
               <div className="col-xs-6">
                 <button id="submit-form-button"
-                  onClick={(e) => this.disableCitiesPage(e)}
+                  onClick={() => handleSubmit}
                   className="btn btn-success"> Next page</button>
               </div>
             </form>
@@ -232,6 +227,9 @@ class CitiesPage extends React.Component {
     // this.updateClickState("showThankYouPage", true)
     // this.persistToDatabase(name, number)
   }
+  selectCategory(category) {
+    this.setState({page: 3})
+  }
 
   persistToDatabase(name, number) {
     let section = this.state.section;
@@ -240,21 +238,14 @@ class CitiesPage extends React.Component {
   }
   categoriesPage() {
     let categories = ['Housing', 'Jobs', 'Personals', 'Community', 'For Sale'];
-    let displayCategories = categories.map((category, index) => {
-      return (
-        <div>
-            <Category key = {index}
-              category = {category}
-              selectCategory = {this.props.selectCategory}
-            >
-            </Category>
-        </div>
-      )
-    })
     return (
       <div className="col-xs-12 col-sm-5 col-sm-push-4">
         <h2> Pick a section you want to be notified on </h2>
-        {displayCategories}
+          <div>
+              <Category category = {categories}
+              >
+              </Category>
+          </div>
       </div>
     )
   }
@@ -277,12 +268,13 @@ class CitiesPage extends React.Component {
 }
 
 CitiesPage.propTypes = {
-  errors: PropTypes.object,
-  validate: PropTypes.func,
-  isValid: PropTypes.func,
-  handleValidation: PropTypes.func,
-  getValidationMessages: PropTypes.func,
-  clearValidations: PropTypes.func
+  fields: PropTypes.object.isRequired,
+  handleSubmit: PropTypes.func.isRequired
 }
 
-export default validation(strategy)(CitiesPage)
+export default reduxForm({
+  form: 'craigslist',
+  fields,
+  destroyOnUnmount: false,
+  validate
+})(CitiesPage)

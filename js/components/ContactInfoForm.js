@@ -2,14 +2,12 @@ import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
 import Joi from 'joi';
 import {PropTypes} from 'react'
+export const fields = ['city', 'category', 'name', 'number'];
+import {reduxForm} from 'redux-form';
 
 class ContactInfoForm extends React.Component {
   constructor(props) {
     super(props);
-    this.validatorTypes = {
-      name: Joi.string().required().label('name'),
-      number: Joi.string().required().label('number')
-    }
   }
 
   passRefsToParent(event) {
@@ -45,22 +43,20 @@ class ContactInfoForm extends React.Component {
       <div id="contact-form">
         <form>
           <h2 styles={secondHeaderStyles}> We just need your contact information to notify you when a new ad has been posted. </h2>
-          <input
+          <input {...this.props.fields.number}
           id="number-field"
           style={inputFieldStyles}
           ref="numberField"
           type="text"
           className="form-control"
-          onBlur = {this.props.handleValidation('number')}
           placeholder="number"/>
-          {this.renderError.bind(this, this.props.getValidationMessages('number'))}
 
           <input
            ref="nameField"
            style={inputFieldStyles}
+           {...this.props.fields.name}
            type="text"
            className="form-control"
-           onBlur = {this.props.handleValidation('name')}
            placeholder="name"/>
           <button id="contact-form-submit" onClick={this.passRefsToParent.bind(this)} className="btn btn-success"> Submit </button>
         </form>
@@ -69,13 +65,8 @@ class ContactInfoForm extends React.Component {
   }
 }
 
-ContactInfoForm.propTypes = {
-  errors: PropTypes.object,
-  validate: PropTypes.func,
-  isValid: PropTypes.func,
-  handleValidation: PropTypes.func,
-  getValidationMessages: PropTypes.func,
-  clearValidations: PropTypes.func
-}
-
-export default validation(strategy)(ContactInfoForm)
+export default reduxForm({
+  form: 'craigslist',
+  fields,
+  destroyOnUnmount: false
+})(ContactInfoForm)
