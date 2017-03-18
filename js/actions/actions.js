@@ -1,32 +1,43 @@
-export const DISABLE_CITIES_PAGE = 'DISABLE_CITIES_PAGE'
-export const SELECT_CATEGORY = 'SELECT_CATEGORY'
-export const SUBMIT_CONTACT_INF0 = 'SUBMIT_CONTACT_INF0'
+export const UPDATE_CITY = 'UPDATE_CITY'
+export const UPDATE_SECTION = 'UPDATE_SECTION'
+export const UPDATE_NAME = 'UPDATE_NAME'
+export const UPDATE_NUMBER = 'UPDATE_NUMBER'
+export const UPDATE_PAGE = 'UPDATE_PAGE'
 
 
-export function disableCitiesPage(city) {
+export function updateCity (city) {
+  console.log("UPDATEING CITY ", city)
   return {
-    type: DISABLE_CITIES_PAGE,
-    city
+    type: UPDATE_CITY,
+    payload: city
   }
 }
 
-export function selectCategory(section) {
-  console.log("category is ", section)
+export function updateSection (section) {
   return {
-    type: SELECT_CATEGORY,
-    section
+    type: UPDATE_SECTION,
+    payload: section
   }
 }
 
-export function submitContactInfo() {
+export function updateName (name) {
   return {
-    type: SUBMIT_CONTACT_INF0
+    type: UPDATE_NAME,
+    payload: name
   }
 }
 
-export function updateField(field, val) {
+export function updateNumber(number) {
   return {
-    type: UPDATE_FIELD,
-    val    
+    type: UPDATE_NUMBER,
+    payload: number
+  }
+}
+
+
+export function updatePage(page) {
+  return {
+    type: UPDATE_PAGE,
+    payload: page
   }
 }

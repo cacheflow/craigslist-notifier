@@ -19,12 +19,10 @@ export default class App extends React.Component {
 }
 
 function mapStateToProps(state)  {
-  console.log('state is ', state)
+  console.log("state is ", state)
   return {
-    id: state.userData.id,
-    name: state.userData.name,
-    number: state.userData.number,
-    section: state.userData.section
+    form: state.updateForm.form,
+    page: state.page
   }
 }
 
@@ -39,6 +37,8 @@ App.propTypes = {
   name: React.PropTypes.string,
   city: React.PropTypes.string,
 }
+
+
 
 export default connect(
   mapStateToProps,

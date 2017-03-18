@@ -10,6 +10,9 @@ import Joi from 'joi';
 import {PropTypes} from 'react';
 import {reduxForm} from 'redux-form';
 export const fields = ['city']
+import bindActionCreators from 'redux'; 
+import { connect } from 'react-redux'
+
 
 const validate = values => {
   const errors = {}
@@ -22,35 +25,13 @@ const validate = values => {
   return errors
 }
 
-const getSuggestions = (value) => {
-  const inputValue = value.trim().toLowerCase();
-  const inputLength = inputValue.length;
-  if(inputLength === 0) {
-    return []
-  }
-  else {
-    return cities.filter(city => city.toLowerCase().slice(0, inputLength) === inputValue)
-  }
-}
 
-const getSuggestionValue = (suggestion) => {
-  return suggestion
-}
-
-const renderSuggestion = (suggestion) => {
-  return (
-    <span> {suggestion}</span>
-  )
-}
-
-
-class CitiesPage extends React.Component {
+export default class CitiesPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       page: 1,
-      previewCity: "",
-      suggestions: getSuggestions('')
+      previewCity: ""
     };
     this.validatorTypes = {
       city: Joi.string().regex(/^[a-zA-Z]{4,30}$/).required().label('city')
@@ -131,12 +112,6 @@ class CitiesPage extends React.Component {
     }
   }
 
-  transitionToCategoriesPage() {
-    return (
-      <button className="btn btn-success"> Help me</button>
-    )
-  }
-
   disableCitiesPage(event) {
     event.preventDefault()
     const onValidate = (error) => {
@@ -184,11 +159,6 @@ class CitiesPage extends React.Component {
   }
 
   showCitiesPage() {
-    const {disableCitiesPage} = this.props;
-    const {
-      fields: {city },
-      handleSubmit
-    } = this.props;
     return (
       <div>
           <div className="row">
@@ -196,18 +166,29 @@ class CitiesPage extends React.Component {
             <div id="craigslist-intro"> Enter a city you want to be notified in</div>
             <form>
               <div className="col-xs-6 col-xs-push-3">
-                <input type="text" placeholder="City" {...city} />
-                {city.touched && city.error && <div>{city.error}</div>}
+                <input type="text" placeholder="City" onChange = {(eventData) => this.handleTextOnEnter(eventData)} />
               </div>
               <div className="col-xs-6">
                 <button id="submit-form-button"
-                  onClick={() => handleSubmit}
+                  onClick={(eventData) => this.handleSubmit(eventData)}
                   className="btn btn-success"> Next page</button>
               </div>
             </form>
           </div>
         </div>
     )
+  }
+
+  handleTextOnEnter(eventData) {
+    let eventStf = eventData.persist()
+    this.props.updateCity(eventData.target.value)
+    console.log("event data is ", eventData.target.value)
+  }
+
+  handleSubmit(eventData) {
+    eventData.preventDefault()
+    this.props.updateCity()
+    this.setState({page: 2})
   }
 
   contactInfoForm() {
@@ -236,6 +217,7 @@ class CitiesPage extends React.Component {
     const {city} = this.state;
     firebaseRef.addToDatabase(section, name, number, city)
   }
+
   categoriesPage() {
     let categories = ['Housing', 'Jobs', 'Personals', 'Community', 'For Sale'];
     return (
@@ -267,14 +249,6 @@ class CitiesPage extends React.Component {
   }
 }
 
-CitiesPage.propTypes = {
-  fields: PropTypes.object.isRequired,
-  handleSubmit: PropTypes.func.isRequired
-}
 
-export default reduxForm({
-  form: 'craigslist',
-  fields,
-  destroyOnUnmount: false,
-  validate
-})(CitiesPage)
+
+

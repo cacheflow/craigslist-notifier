@@ -26,7 +26,6 @@ class ContactInfoForm extends React.Component {
   }
 
   renderError(message) {
-    console.log(message)
     return (
       <span className="alert-danger"> {message} </span>
     )
@@ -65,8 +64,4 @@ class ContactInfoForm extends React.Component {
   }
 }
 
-export default reduxForm({
-  form: 'craigslist',
-  fields,
-  destroyOnUnmount: false
-})(ContactInfoForm)
+export default ContactInfoForm
